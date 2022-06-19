@@ -1,0 +1,41 @@
+# python 爬虫 总结
+
+- test ：简单爬取页面或页面中的一些组件文本信息
+- 入门 ：根据 正则表达试/bs4/xpath 解析html文件，根据标签爬取数据
+  - xpath和bs4定位标签，若数据在js代码中，可以用正则表达式
+- 验证码 ：使用第三方平台|手动输入
+- 登录 ：寻找login的url，使用session存储cookie，代理
+- 异步 ：高性能异步爬虫
+  - 多进程/线程：不推荐
+  - 线程池：Pool可以适当使用
+  - 推荐：单线程+异步协程（async）
+  - aiohttp代替requests，为了使用await
+- Selenium 代码：浏览器自动化操作
+  - 要下载浏览器驱动程序
+  - 超级鹰识别点击图片型验证码，返回坐标，使用动作链进行连续点击
+- Scrapy ：爬虫框架
+  - 创建工程：`scrapy startproject xxx`
+  - 在Spider子目录中创建爬虫文件：`scrapy genspider [spider_name] [url(www.xxx.com)]`
+  - 执行工程：`scrapy crawl [spider_name]`
+    - 去除日志文件：`scrapy crawl --nolog [spider_name]`
+    - 不去除日志，但仅保留出错信息，settings里添加`LOG_LEVEL = 'ERROR'`
+    - 不遵从robots协议，setting里修改
+    - UA伪装：settings里设置
+    - 终端持久化存储：`-o file_path`
+  - 基于管道持久化存储：存储到item类型的对象，在pipeline中处理item对象（可持久化存储）
+    - 需要在settings中开启管道设置
+  - 获取图片，使用ImagePipeline，在settings里指定图片存储路径
+  - 下载中间件设置UA伪装和代理：需在settings中开启`DOWNLOADER_MIDDLEWARES`, 在`middlewares.py`文件中修改
+    - UA伪装：process request中写
+    - 代理：process exception中写
+  - CrawlSpider：Spider的一个子类
+    - 创建方式：`scrapy genspider -t crawl [spider_name] [url(www.xxx.com)]`
+  - 分布式爬虫：scrapy-redis库（https://www.bilibili.com/video/BV1Yh411o7Sz?p=81）
+  - 增量式爬虫：只爬取网站最新更新出来的数据，不重复爬取
+    - 解决方案：连接redis数据库，发送待请求url发到redis的set中，看是否已经爬取过（同理，可以用mysql的select语句判断数据库中是否已有请求页的url）
+- 补充：协程
+  - greenlet库
+  - yield关键字
+  - asyncio库
+  - async & await（推荐）
+
